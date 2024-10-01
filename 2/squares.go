@@ -12,22 +12,25 @@ import (
 	"sync"
 )
 
-func squares(num int, wg *sync.WaitGroup) {
+func square(num int, wg *sync.WaitGroup/* , mu *sync.Mutex */) {
 	defer wg.Done()
+	// defer mu.Unlock()
 	result := num * num
 	fmt.Println(result)
 }
 
 func main() { 
-	nums := make([]int, 0, 2)
-	nums = append(nums, 1)
-	nums = append(nums, 2)
-	nums = append(nums, 3)
+	// nums := make([]int, 0, 2)
+	// nums = append(nums, 1)
+	// nums = append(nums, 2)
+	// nums = append(nums, 3)
+	nums := [3]int{1,2,3}
 	var wg sync.WaitGroup
-	// wg.Wait()
+	// var mu sync.Mutex
 	for _, val := range nums {
 		wg.Add(1)
-		go squares(val, &wg);
+		// mu.Lock()
+		go square(val, &wg/* , &mu */);
 	}
 	wg.Wait()
 }

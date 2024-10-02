@@ -6,38 +6,41 @@ import (
 )
 
 /*
-Дана последовательность чисел: 2,4,6,8,10. Найти сумму их квадратов(22+32+42….) с использованием конкурентных вычислений.
+	Дана последовательность чисел: 2,4,6,8,10. Найти сумму их квадратов(22+32+42….) с использованием конкурентных вычислений.
 
 */
 
-func square(in, out chan int, wg *sync.WaitGroup) {
-	defer wg.Done()
-	// defer mu.Unlock()
-	wg.Add(1)
-	num := <- in
-	result := num * num
-	out <- result
-	// fmt.Println(result)
+var wg sync.WaitGroup
+
+/* 
+	Будет две функции которые общаются между собой с помощью двух каналов, это будет маленькая версия пайплайна
+	Первая функция получает на вход массив и канал in в который записывает квадраты чисел
+	Вторая функция получает на вход канал in считывает из него числа
+*/
+
+func square(nums []int) <-chan int{
+	out := make(chan int)
+	go func() {
+		for _, num := range nums {
+			out <- num * num
+		}
+		close(out)
+	}()
+	return out
 }
 
-func sumSquares(out chan int, wg *sync.WaitGroup, sum *int) {
-	defer wg.Done()
-	wg.Add(1)
-	a := <- out
-	*sum += a
+func sumOfChan(in <-chan int) {
+	sum := 0
+	for num := range in { // этот цикл будет продолжаться до тех пор, пока канал не будет закрыт! тоесть пока канал out из прошлой горутины не закроется, а закроется он только тогда, когда все значения из массива пройдут через него. 
+
+		sum += num
+	}
+	fmt.Println(sum)
 }
 
 func main() {
-	var wg *sync.WaitGroup
-	sum := 0
-	nums := [5]int{2, 4, 6, 8, 10}
-	in := make(chan int)
-	out := make(chan int)	
-	for _, val := range nums {
-		in <- val
-		go square(in, out, wg)
-		go sumSquares(out, wg, &sum)
-	}
-	wg.Wait()
-	fmt.Println(sum)
+	// sum := 0
+	nums := []int{2, 4}
+	in := square(nums)
+	sumOfChan(in)
 }

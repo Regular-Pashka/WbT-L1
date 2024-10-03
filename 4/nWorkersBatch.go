@@ -19,7 +19,7 @@ import (
 	"sync"
 	// "bufio"
 	"os"
-	"syscall"
+	// "syscall"
 	"os/signal"
 	// "math/rand"
 	"time"
@@ -40,37 +40,41 @@ func main() {
 	maxBuffer := 100
 	i := 0
 	data := make(chan int, maxBuffer)
+	c := make(chan os.Signal, 1)
+
+
     fmt.Print("Введите количество воркеров: ")
     fmt.Scan(&workerCount)
 	for w := 1; w <= workerCount; w++ {
 		wg.Add(1)
 		go worker(w, data, &wg)
 	}
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	signalReceived := false
-	// go func() {
-	// 	<-c
-	// 	close(data)
-	// }()
-	for !signalReceived {
+	signal.Notify(c, os.Interrupt)
+	// signalReceived := false
+	go func() {
+		<-c
+	}()
+	for {
 		select {
-		case <-c:
-			close(data)
-			signalReceived = true	
-		default:
+		case data <- i:
 			i++
-			data <- i
+		case <-c:
+			close(data)		
+			wg.Wait()
+			fmt.Println("Все горутинки отработали")
+		default:
+			
+			fmt.Println("data заблокировалась")
 		}
 	}
 
-	wg.Wait()
-	fmt.Println("Все горутинки отработали!")
 }
-
 
 /* 
 	Вывод:
 	Это была задача на воркер-пул
+
+
+	Вывод 03.10: select во первых выполняет операцию внутри case, это не аналог if, который ждет пока условие будет выполнено в другой части кода. во вторых select из списка case'ов выполняет в первую очередь тот, который является неблокирующей операцией.
 
 */

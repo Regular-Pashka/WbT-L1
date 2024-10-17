@@ -5,28 +5,40 @@ import (
 	"fmt"
 )
 
-func quicksort(arr []int, left int, right int) {
-	if len(arr) < 2 {
-		return 
-	}
-	pivot := arr[right]
-	j := (left - 1)
+// quickSort выполняет быструю сортировку на срезе целых чисел.
+func quickSort(arr []int, low, high int) {
+	if low < high {
+		// Разделяем массив и получаем индекс опорного элемента
+		pi := partition(arr, low, high)
 
-	for i := left; i < right; i++ {
-		if arr[i] < pivot {
-			arr[j], arr[i] = arr[i], arr[j]
-			j++
+		// Рекурсивно сортируем элементы до и после опорного элемента
+		quickSort(arr, low, pi - 1)
+		quickSort(arr, pi + 1, high)
+	}
+}
+
+// partition разделяет массив и возвращает индекс опорного элемента
+func partition(arr []int, low, high int) int {
+	pivot := arr[high] // выбираем последний элемент в качестве опорного
+	i := low - 1       // индекс меньшего элемента
+
+	for j := low; j < high; j++ {
+		// Если текущий элемент меньше или равен опорному
+		if arr[j] <= pivot {
+			i++ // увеличиваем индекс меньшего элемента
+			arr[i], arr[j] = arr[j], arr[i] // меняем местами
 		}
 	}
-	arr[j + 1], arr[right] = arr[right], arr[j + 1]
-
-	quicksort(arr, left, j - 1)
-	quicksort(arr, j + 1, right)
+	// меняем местами опорный элемент с элементом, следующим за меньшим
+	arr[i + 1], arr[high] = arr[high], arr[i + 1]
+	return i + 1
 }
 
 func main() {
-	someSlice := []int{1, 5, 2, 3, 64, 213, 543, 21, 423, 65, -11, 432, 0}
-	fmt.Println(someSlice)
-	quicksort(someSlice, 0, len(someSlice) - 1)
-	fmt.Println(someSlice)
+	arr := []int{10, 7, 8, 9, 1, 5}
+	n := len(arr)
+
+	quickSort(arr, 0, n - 1)
+
+	fmt.Println("Отсортированный массив:", arr)
 }

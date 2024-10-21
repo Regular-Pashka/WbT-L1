@@ -13,7 +13,7 @@ func binarySearch(arr []int, target int) int {
 	high := len(arr) - 1
 	result := -1
 	for low <= high {
-		mid := low + (high-low)/2 // Вычисляем средний индекс
+		mid := low + (high - low) / 2 // Вычисляем средний индекс
 
 		if arr[mid] == target {
 			result = mid // Элемент найден, возвращаем индекс

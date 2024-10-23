@@ -83,3 +83,46 @@ import (
 // }
 
 
+
+/* Ниже интересная задачка от тимлида */
+
+// // You can edit this code!
+// // Click here and start typing.
+// package main
+
+// import "fmt"
+
+// // Вопрос: Объяснить причину ошибки
+// func main() {
+// 	var counter Counter
+
+// 	counter = NewCounter()
+// 	// проверка счетчика
+// 	if counter == nil {
+// 		fmt.Println("counter is nil")
+// 		return
+// 	}
+
+// 	fmt.Printf("start count with counter[%v]\n", counter)
+
+// 	for i := 0; i < 5; i++ {
+// 		fmt.Println(counter.Count())
+// 	}
+// }
+
+// type Counter interface {
+// 	Count() int
+// }
+
+// type SomeCounter struct {
+// 	cnt int
+// }
+
+// func (c *SomeCounter) Count() int {
+// 	c.cnt++
+// 	return c.cnt
+// }
+
+// func NewCounter() *SomeCounter {
+// 	return nil
+// }
